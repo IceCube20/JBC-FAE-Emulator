@@ -107,7 +107,7 @@ flowchart LR
   end
 
   %% ===== LED Strip =====
-  subgraph LEDS["SK6812 LED Strip (GRBW)"]
+  subgraph LEDS["SK6812 LED Strip (GRBW) 2 per Bus(4 pcs. 2 Buses"]
     LED_VCC["VCC 5V"]
     LED_DATA["DIN from GPIO21"]
     LED_GND["GND"]
