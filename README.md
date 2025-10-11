@@ -121,3 +121,25 @@ flowchart LR
   %% ===== Hinweise =====
   classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray:3 3;
   N1["Wenn keine Daten ankommen, RXD und TXD am RJ12/Adapter pruefen. Manche Kabel sind gekreuzt."]:::note
+
+flowchart LR
+  subgraph RJ12["RJ12 (JBC Buchse)"]
+    R1["1 — NC"]
+    R2["2 — GND"]
+    R3["3 — TX (JBC →)"]
+    R4["4 — RX (← JBC)"]
+    R5["5 — GND"]
+    R6["6 — NC"]
+  end
+
+  subgraph DB9["DB9 (RS-232)"]
+    D2["Pin 2 — RXD"]
+    D3["Pin 3 — TXD"]
+    D5["Pin 5 — GND"]
+  end
+
+  %% Verdrahtung
+  R3 -->|TX → RXD| D2
+  D3 -->|TXD → RX| R4
+  R2 -. GND .- D5
+  R5 -. GND .- D5
