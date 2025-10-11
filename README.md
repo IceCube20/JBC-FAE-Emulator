@@ -74,6 +74,7 @@ flowchart LR
     LED_PIN["GPIO21 → SK6812 Data"]
     REL_PIN["GPIO26 → Relay IN"]
     V3["3V3"]
+    V5["5V"]
     GND["GND"]
   end
 
