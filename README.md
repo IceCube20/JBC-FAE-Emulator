@@ -147,10 +147,10 @@ flowchart LR
 
   %% ===== Relay Wiring =====
   REL_PIN --> REL_IN
-  V3 --> REL_VCC
+  V5 --> REL_VCC
   GND --> REL_GND
 
   %% ===== LED Wiring =====
   LED_PIN --> LED_DATA
-  V3 --> LED_VCC
+  V5 --> LED_VCC
   GND --> LED_GND
