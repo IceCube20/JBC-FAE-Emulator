@@ -122,24 +122,55 @@ flowchart LR
   classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray:3 3;
   N1["Wenn keine Daten ankommen, RXD und TXD am RJ12/Adapter pruefen. Manche Kabel sind gekreuzt."]:::note
 
-flowchart LR
-  subgraph RJ12["RJ12 (JBC Buchse)"]
-    R1["1 — NC"]
-    R2["2 — GND"]
-    R3["3 — TX (JBC →)"]
-    R4["4 — RX (← JBC)"]
-    R5["5 — GND"]
-    R6["6 — NC"]
-  end
+%% --- RJ12 <-> DB9 Mapping BUS0 (IDs sind einzigartig) ---
+subgraph RJ12_A["RJ12 Bus0 (JBC Buchse)"]
+  A_R1["1 - NC"]
+  A_R2["2 - GND"]
+  A_R3["3 - TX (JBC ->)"]
+  A_R4["4 - RX (<- JBC)"]
+  A_R5["5 - GND"]
+  A_R6["6 - NC"]
+end
 
-  subgraph DB9["DB9 (RS-232)"]
-    D2["Pin 2 — RXD"]
-    D3["Pin 3 — TXD"]
-    D5["Pin 5 — GND"]
-  end
+subgraph DB9_A["DB9 Bus0 (RS-232)"]
+  A_D2["Pin 2 - RXD"]
+  A_D3["Pin 3 - TXD"]
+  A_D5["Pin 5 - GND"]
+end
 
-  %% Verdrahtung
-  R3 -->|TX → RXD| D2
-  D3 -->|TXD → RX| R4
-  R2 -. GND .- D5
-  R5 -. GND .- D5
+A_R3 -->|TX -> RXD| A_D2
+A_D3 -->|TXD -> RX| A_R4
+A_R2 -. GND .- A_D5
+A_R5 -. GND .- A_D5
+
+%% Optional: mit deinem vorhandenen DB9-Knoten verbinden (ID anpassen!)
+%% Beispiel falls dein Modul-Knoten "A_DB9" heisst:
+%% A_D2 --- A_DB9
+%% A_D3 --- A_DB9
+%% A_D5 --- A_DB9
+
+%% --- RJ12 <-> DB9 Mapping BUS1 (falls Dual-Bus) ---
+subgraph RJ12_B["RJ12 Bus1 (JBC Buchse)"]
+  B_R1["1 - NC"]
+  B_R2["2 - GND"]
+  B_R3["3 - TX (JBC ->)"]
+  B_R4["4 - RX (<- JBC)"]
+  B_R5["5 - GND"]
+  B_R6["6 - NC"]
+end
+
+subgraph DB9_B["DB9 Bus1 (RS-232)"]
+  B_D2["Pin 2 - RXD"]
+  B_D3["Pin 3 - TXD"]
+  B_D5["Pin 5 - GND"]
+end
+
+B_R3 -->|TX -> RXD| B_D2
+B_D3 -->|TXD -> RX| B_R4
+B_R2 -. GND .- B_D5
+B_R5 -. GND .- B_D5
+
+%% Optional: an deinen zweiten DB9-Knoten anbinden (ID anpassen!)
+%% B_D2 --- B_DB9
+%% B_D3 --- B_DB9
+%% B_D5 --- B_DB9
