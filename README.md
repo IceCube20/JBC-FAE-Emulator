@@ -66,98 +66,83 @@ On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and
 ```mermaid
 flowchart LR
   %% ===== MCU =====
-  subgraph MCU["ESP32"]
-    TX0["GPIO17 TX BUS0"]
-    RX0["GPIO16 RX BUS0"]
-    TX1["GPIO33 TX BUS1"]
-    RX1["GPIO32 RX BUS1"]
-    LEDPIN["GPIO21 SK6812"]
-    RELPIN["GPIO26 Relay"]
-    V3["3V3"]
-    G["GND"]
+  subgraph MCU["ESP32 (3V3)"]
+    M_TX0["GPIO17 — TX BUS0"]
+    M_RX0["GPIO16 — RX BUS0"]
+    M_TX1["GPIO33 — TX BUS1"]
+    M_RX1["GPIO32 — RX BUS1"]
+    M_LED["GPIO21 — SK6812"]
+    M_REL["GPIO26 — Relay"]
+    M_3V3["3V3"]
+    M_GND["GND"]
   end
 
-  %% ===== Modules =====
-  subgraph MOD_A["MAX3232 DB9 Module BUS0"]
-    A_RXD["TTL RXD"]
-    A_TXD["TTL TXD"]
-    A_V["VCC"]
-    A_G["GND"]
-    A_DB9["DB9 A 2=RXD 3=TXD 5=GND"]
+  %% ===== MAX3232 (dual-channel) =====
+  subgraph MAX["MAX3232 (dual-channel)"]
+    subgraph CHA["Channel A (Bus0)"]
+      A_TIN["T1IN (TTL in)"]
+      A_TOUT["T1OUT (RS-232 out)"]
+      A_RIN["R1IN (RS-232 in)"]
+      A_ROUT["R1OUT (TTL out)"]
+    end
+    subgraph CHB["Channel B (Bus1)"]
+      B_TIN["T2IN (TTL in)"]
+      B_TOUT["T2OUT (RS-232 out)"]
+      B_RIN["R2IN (RS-232 in)"]
+      B_ROUT["R2OUT (TTL out)"]
+    end
+    X_VCC["VCC 3.0-5.5 V"]
+    X_GND["GND"]
   end
 
-  subgraph MOD_B["MAX3232 DB9 Module BUS1"]
-    B_RXD["TTL RXD"]
-    B_TXD["TTL TXD"]
-    B_V["VCC"]
-    B_G["GND"]
-    B_DB9["DB9 B 2=RXD 3=TXD 5=GND"]
+  %% ===== Connectors =====
+  subgraph RS232A["Bus0 connector (DB9 / RJ12)"]
+    A_TX["RS-232 TX (DB9 pin 3) to peer RX"]
+    A_RX["RS-232 RX (DB9 pin 2) from peer TX"]
+    A_GND["GND (DB9 pin 5)"]
+    A_RJ["RJ12: 3=TX from JBC, 4=RX to JBC, 2/5=GND"]
   end
 
-  %% ===== Peripherals =====
-  LED["SK6812 strip or pixel"]
-  REL["Relay module"]
-
-  %% ===== Wiring BUS0 =====
-  TX0 --> A_RXD
-  A_TXD --> RX0
-  V3 --> A_V
-  G --> A_G
-
-  %% ===== Wiring BUS1 =====
-  TX1 --> B_RXD
-  B_TXD --> RX1
-  V3 --> B_V
-  G --> B_G
-
-  %% ===== LED & Relay =====
-  LEDPIN -->|Data| LED
-  RELPIN -->|Coil| REL
-
-  %% ===== Ground to DB9 shells =====
-  G -. GND .- A_DB9
-  G -. GND .- B_DB9
-
-  %% ===== Notes =====
-  classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray:3 3;
-  N1["If no data arrives, check RXD/TXD at the RJ12/adapter. Some cables are crossed."]:::note
-  
-  subgraph RJ12_A["RJ12 Bus0 (JBC jack)"]
-    A_R1["1 - NC"]
-    A_R2["2 - GND"]
-    A_R3["3 - TX (JBC ->)"]
-    A_R4["4 - RX (<- JBC)"]
-    A_R5["5 - GND"]
-    A_R6["6 - NC"]
+  subgraph RS232B["Bus1 connector (DB9 / RJ12)"]
+    B_TX["RS-232 TX (DB9 pin 3) to peer RX"]
+    B_RX["RS-232 RX (DB9 pin 2) from peer TX"]
+    B_GND["GND (DB9 pin 5)"]
+    B_RJ["RJ12: 3=TX from JBC, 4=RX to JBC, 2/5=GND"]
   end
 
-  subgraph DB9_A["DB9 Bus0 (RS-232)"]
-    A_D2["Pin 2 - RXD"]
-    A_D3["Pin 3 - TXD"]
-    A_D5["Pin 5 - GND"]
-  end
+  %% ===== TTL wiring (MCU <-> MAX3232) =====
+  M_TX0 -->|"TX"| A_TIN
+  A_ROUT -->|"RX"| M_RX0
 
-  A_R3 -->|TX -> RXD| A_D2
-  A_D3 -->|TXD -> RX| A_R4
-  A_R2 -. GND .- A_D5
-  A_R5 -. GND .- A_D5
-  
-  subgraph RJ12_B["RJ12 Bus1 (JBC jack)"]
-    B_R1["1 - NC"]
-    B_R2["2 - GND"]
-    B_R3["3 - TX (JBC ->)"]
-    B_R4["4 - RX (<- JBC)"]
-    B_R5["5 - GND"]
-    B_R6["6 - NC"]
-  end
+  M_TX1 -->|"TX"| B_TIN
+  B_ROUT -->|"RX"| M_RX1
 
-  subgraph DB9_B["DB9 Bus1 (RS-232)"]
-    B_D2["Pin 2 - RXD"]
-    B_D3["Pin 3 - TXD"]
-    B_D5["Pin 5 - GND"]
-  end
+  %% ===== Power & ground =====
+  M_3V3 --> X_VCC
+  M_GND --> X_GND
 
-  B_R3 -->|TX -> RXD| B_D2
-  B_D3 -->|TXD -> RX| B_R4
-  B_R2 -. GND .- B_D5
-  B_R5 -. GND .- B_D5
+  %% ===== RS-232 side (MAX3232 <-> connectors) =====
+  A_TOUT --> A_TX
+  A_RIN  <-- A_RX
+  X_GND -.-> A_GND
+
+  B_TOUT --> B_TX
+  B_RIN  <-- B_RX
+  X_GND -.-> B_GND
+
+  %% ===== Accessories =====
+  M_LED -->|"data"| LED["SK6812 strip/pixel"]
+  M_REL -->|"coil"| REL["Relay module"]
+  M_GND -.-> LED
+  M_GND -.-> REL
+
+  %% ===== Styling =====
+  classDef mcu fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
+  classDef max fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+  classDef conn fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
+  classDef acc fill:#F3E5F5,stroke:#6A1B9A,color:#4A148C,stroke-dasharray:3 3;
+
+  class M_TX0,M_RX0,M_TX1,M_RX1,M_LED,M_REL,M_3V3,M_GND mcu
+  class A_TIN,A_TOUT,A_RIN,A_ROUT,B_TIN,B_TOUT,B_RIN,B_ROUT,X_VCC,X_GND max
+  class RS232A,RS232B,A_TX,A_RX,B_TX,B_RX,A_GND,B_GND,A_RJ,B_RJ conn
+  class LED,REL acc
