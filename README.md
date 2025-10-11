@@ -65,56 +65,59 @@ Bei Breakout-Boards heißen die Pins oft **T1IN/T1OUT, R1IN/R1OUT** (Kanal A) un
 
 ```mermaid
 flowchart LR
-  %% ============ JBC RJ12 ============
-  subgraph RJ[JBC Station – RJ12]
-    RJ2["Pin 2 — GND"]
-    RJ3["Pin 3 — TXD (JBC →)"]
-    RJ4["Pin 4 — RXD (← JBC)"]
-    RJ5["Pin 5 — GND"]
+  %% ===== MCU =====
+  subgraph MCU["ESP32"]
+    TX0["GPIO17 TX BUS0"]
+    RX0["GPIO16 RX BUS0"]
+    TX1["GPIO33 TX BUS1"]
+    RX1["GPIO32 RX BUS1"]
+    LEDPIN["GPIO21 SK6812"]
+    RELPIN["GPIO26 Relay"]
+    V3["3V3"]
+    G["GND"]
   end
 
-  %% ============ DB9 ============
-  subgraph DB9[DB9 (Female an Station)]
-    D2["Pin 2 — RXD (empfängt von JBC TX)"]
-    D3["Pin 3 — TXD (sendet zur JBC RX)"]
-    D5["Pin 5 — GND"]
+  %% ===== Module =====
+  subgraph MOD_A["MAX3232 DB9 Modul BUS0"]
+    A_RXD["TTL RXD"]
+    A_TXD["TTL TXD"]
+    A_V["VCC"]
+    A_G["GND"]
+    A_DB9["DB9 A 2=RXD 3=TXD 5=GND"]
   end
 
-  %% ============ MAX3232 (ein Kanal) ============
-  subgraph MAX[MAX3232 (ein Kanal)]
-    Vcc["VCC (3V3/5V)"]
-    Gx["GND"]
-    T1IN["T1IN  (from MCU TX)"]
-    T1OUT["T1OUT (to DB9 Pin 3 TXD)"]
-    R1IN["R1IN  (from DB9 Pin 2 RXD)"]
-    R1OUT["R1OUT (to MCU RX)"]
+  subgraph MOD_B["MAX3232 DB9 Modul BUS1"]
+    B_RXD["TTL RXD"]
+    B_TXD["TTL TXD"]
+    B_V["VCC"]
+    B_G["GND"]
+    B_DB9["DB9 B 2=RXD 3=TXD 5=GND"]
   end
 
-  %% ============ MCU ============
-  subgraph MCU[MCU]
-    V["3V3 (ESP32) / 5V (Mega)"]
-    Gm["GND"]
-    TX["TX (→)"]
-    RX["RX (←)"]
-  end
+  %% ===== Peripherie =====
+  LED["SK6812 Strip oder Pixel"]
+  REL["Relais Modul"]
 
-  %% RJ12 ↔ DB9 (Kabel/Adapter)
-  RJ3 -->|JBC TXD| D2
-  D3 -->|DB9 TXD| RJ4
-  RJ2 -. GND .- D5
-  RJ5 -. GND .- D5
+  %% ===== Verdrahtung BUS0 =====
+  TX0 --> A_RXD
+  A_TXD --> RX0
+  V3 --> A_V
+  G --> A_G
 
-  %% DB9 ↔ MAX3232 (RS-232 Seite)
-  D2 --> R1IN
-  T1OUT --> D3
-  D5 --> Gx
+  %% ===== Verdrahtung BUS1 =====
+  TX1 --> B_RXD
+  B_TXD --> RX1
+  V3 --> B_V
+  G --> B_G
 
-  %% MAX3232 ↔ MCU (TTL Seite)
-  TX --> T1IN
-  R1OUT --> RX
-  V --> Vcc
-  Gm --> Gx
+  %% ===== LED & Relais =====
+  LEDPIN -->|Data| LED
+  RELPIN -->|Coil| REL
 
-  %% Hinweis
-  classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray: 3 3;
-  N1(["Hinweis: Falls nichts ankommt, RJ12 Pins 3/4 tauschen (manche Kabel sind gedreht)."]):::note
+  %% ===== Masse zu DB9 (Gehäuse GND) =====
+  G -. GND .- A_DB9
+  G -. GND .- B_DB9
+
+  %% ===== Hinweise =====
+  classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray:3 3;
+  N1["Wenn keine Daten ankommen, RXD und TXD am RJ12/Adapter pruefen. Manche Kabel sind gekreuzt."]:::note
