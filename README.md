@@ -1,65 +1,65 @@
 # JBC FAE Emulator – USB Base-Link + P02 (Dual-Bus, ESP32 / Arduino Mega)
 
-**Emuliert eine JBC FAE Base-Unit** mit robustem P02-Parser (DLE-Byte-Stuffing, XOR-BCC) auf **zwei unabhängigen Bussen**.  
-LED-Status (SK6812), Relais-Nachlauf, Persistenz (NVS/EEPROM) und **RS-232 über MAX3232**.
+**Emulates a JBC FAE base unit** with a robust P02 parser (DLE byte-stuffing, XOR BCC) on **two independent buses**.  
+LED status (SK6812), relay after-run, persistence (NVS/EEPROM), and **RS-232 via MAX3232**.
 
-> CLI über USB @ **115200**. Bus-UARTs @ **250000 8E1**.  
-> RS-232: **MAX3232** (3.0–5.5 V) wandelt zwischen MCU-TTL (3V3/5V) und ±RS-232.
+> CLI over USB @ **115200**. Bus UARTs @ **250000 8E1**.  
+> RS-232: **MAX3232** (3.0–5.5 V) converts between MCU-TTL (3V3/5V) and ±RS-232.
 
 ---
 
 ## Features
 
-- **Dual-Bus** (BUS_COUNT=1|2), je Bus eigene **DeviceID** & **Adresse**
-- **Base-Link** Handshake (NAK/SYN/ACK/SOH) → **P02**
-- **P02 Parser**: LEN-basiert, DLE-Stuffing, **XOR-BCC (Seed 0x01)**
-- **Relais** mit **After-Run Owner** & „continuous suction“
-- **Auto-Save** von Writes (Debounce)
-- **SK6812 GRBW** Link/Status je Bus
-- **Persistenz**: ESP32 = **NVS** / Mega = **EEPROM**
-- **RS-232** pro Bus via **MAX3232** (Dual-Channel möglich)
+- **Dual bus** (BUS_COUNT=1|2), each bus with its own **DeviceID** & **address**
+- **Base-Link** handshake (NAK/SYN/ACK/SOH) → **P02**
+- **P02 parser**: length-based, DLE stuffing, **XOR BCC (seed 0x01)**
+- **Relay** with **after-run owner** & “continuous suction”
+- **Auto-save** for writes (debounced)
+- **SK6812 GRBW** link/status per bus
+- **Persistence**: ESP32 = **NVS** / Mega = **EEPROM**
+- **RS-232** per bus via **MAX3232** (dual-channel possible)
 
 ---
 
 ## Hardware & Pins
 
-### ESP32 (Defaults)
+### ESP32 (defaults)
 
-| Funktion              | Pin |
+| Function              | Pin |
 |----------------------:|:---:|
 | BUS0 RX (Serial2)     | 16  |
 | BUS0 TX (Serial2)     | 17  |
 | BUS1 RX (Serial1)     | 32  |
 | BUS1 TX (Serial1)     | 33  |
 | SK6812 **LED_PIN**    | 21  |
-| Relais **RELAY_PIN**  | 26  |
+| Relay **RELAY_PIN**   | 26  |
 | MAX3232 **VCC**       | 3V3 |
 
-### Arduino Mega 2560 (Defaults)
+### Arduino Mega 2560 (defaults)
 
-| Funktion              | Pin |
+| Function              | Pin |
 |----------------------:|:---:|
 | BUS0 RX (Serial1)     | 19 (RX1) |
 | BUS0 TX (Serial1)     | 18 (TX1) |
 | BUS1 RX (Serial2)     | 17 (RX2) |
 | BUS1 TX (Serial2)     | 16 (TX2) |
 | SK6812 **LED_PIN**    | 6   |
-| Relais **RELAY_PIN**  | 7   |
+| Relay **RELAY_PIN**   | 7   |
 | MAX3232 **VCC**       | 5V  |
 
-> **Hinweis:** MAX3232 funktioniert mit **3.3 V (ESP32)** und **5 V (Mega)**.  
-> **GND** muss **gemeinsam** zwischen MCU, MAX3232 und Bus liegen.
+> **Note:** MAX3232 works with **3.3 V (ESP32)** and **5 V (Mega)**.  
+> **GND** must be **common** between MCU, MAX3232, and the bus.
 
 ---
 
-## RS-232 Verdrahtung mit MAX3232 (Dual-Channel)
+## RS-232 wiring with MAX3232 (dual-channel)
 
-**Jeder Bus** braucht 1× TX und 1× RX → der MAX3232 (Chip) hat **2 Treiber + 2 Empfänger** → **ein Baustein kann beide Busse** bedienen (Ch.A = Bus0, Ch.B = Bus1).  
-Bei Breakout-Boards heißen die Pins oft **T1IN/T1OUT, R1IN/R1OUT** (Kanal A) und **T2IN/T2OUT, R2IN/R2OUT** (Kanal B).
+**Each bus** needs 1× TX and 1× RX → the MAX3232 chip has **2 drivers + 2 receivers** → **one chip can serve both buses** (Ch.A = Bus0, Ch.B = Bus1).  
+On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and **T2IN/T2OUT, R2IN/R2OUT** (channel B).
 
-- **MCU-TX → TnIN**, **TnOUT → RS-232-TX (zum Gegenüber RX)**
-- **MCU-RX ← RnOUT**, **RnIN  ← RS-232-RX (vom Gegenüber TX)**
-- **GND** durchverbinden
+- **MCU-TX → TnIN**, **TnOUT → RS-232 TX (to peer RX)**
+- **MCU-RX ← RnOUT**, **RnIN  ← RS-232 RX (from peer TX)**
+- Tie **GND** together
 
 ### ESP32 + MAX3232 + 2× RS-232 (JBC Bus 0/1)
 
@@ -77,8 +77,8 @@ flowchart LR
     G["GND"]
   end
 
-  %% ===== Module =====
-  subgraph MOD_A["MAX3232 DB9 Modul BUS0"]
+  %% ===== Modules =====
+  subgraph MOD_A["MAX3232 DB9 Module BUS0"]
     A_RXD["TTL RXD"]
     A_TXD["TTL TXD"]
     A_V["VCC"]
@@ -86,7 +86,7 @@ flowchart LR
     A_DB9["DB9 A 2=RXD 3=TXD 5=GND"]
   end
 
-  subgraph MOD_B["MAX3232 DB9 Modul BUS1"]
+  subgraph MOD_B["MAX3232 DB9 Module BUS1"]
     B_RXD["TTL RXD"]
     B_TXD["TTL TXD"]
     B_V["VCC"]
@@ -94,83 +94,70 @@ flowchart LR
     B_DB9["DB9 B 2=RXD 3=TXD 5=GND"]
   end
 
-  %% ===== Peripherie =====
-  LED["SK6812 Strip oder Pixel"]
-  REL["Relais Modul"]
+  %% ===== Peripherals =====
+  LED["SK6812 strip or pixel"]
+  REL["Relay module"]
 
-  %% ===== Verdrahtung BUS0 =====
+  %% ===== Wiring BUS0 =====
   TX0 --> A_RXD
   A_TXD --> RX0
   V3 --> A_V
   G --> A_G
 
-  %% ===== Verdrahtung BUS1 =====
+  %% ===== Wiring BUS1 =====
   TX1 --> B_RXD
   B_TXD --> RX1
   V3 --> B_V
   G --> B_G
 
-  %% ===== LED & Relais =====
+  %% ===== LED & Relay =====
   LEDPIN -->|Data| LED
   RELPIN -->|Coil| REL
 
-  %% ===== Masse zu DB9 (Gehäuse GND) =====
+  %% ===== Ground to DB9 shells =====
   G -. GND .- A_DB9
   G -. GND .- B_DB9
 
-  %% ===== Hinweise =====
+  %% ===== Notes =====
   classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray:3 3;
-  N1["Wenn keine Daten ankommen, RXD und TXD am RJ12/Adapter pruefen. Manche Kabel sind gekreuzt."]:::note
+  N1["If no data arrives, check RXD/TXD at the RJ12/adapter. Some cables are crossed."]:::note
+  
+  subgraph RJ12_A["RJ12 Bus0 (JBC jack)"]
+    A_R1["1 - NC"]
+    A_R2["2 - GND"]
+    A_R3["3 - TX (JBC ->)"]
+    A_R4["4 - RX (<- JBC)"]
+    A_R5["5 - GND"]
+    A_R6["6 - NC"]
+  end
 
-%% --- RJ12 <-> DB9 Mapping BUS0 (IDs sind einzigartig) ---
-subgraph RJ12_A["RJ12 Bus0 (JBC Buchse)"]
-  A_R1["1 - NC"]
-  A_R2["2 - GND"]
-  A_R3["3 - TX (JBC ->)"]
-  A_R4["4 - RX (<- JBC)"]
-  A_R5["5 - GND"]
-  A_R6["6 - NC"]
-end
+  subgraph DB9_A["DB9 Bus0 (RS-232)"]
+    A_D2["Pin 2 - RXD"]
+    A_D3["Pin 3 - TXD"]
+    A_D5["Pin 5 - GND"]
+  end
 
-subgraph DB9_A["DB9 Bus0 (RS-232)"]
-  A_D2["Pin 2 - RXD"]
-  A_D3["Pin 3 - TXD"]
-  A_D5["Pin 5 - GND"]
-end
+  A_R3 -->|TX -> RXD| A_D2
+  A_D3 -->|TXD -> RX| A_R4
+  A_R2 -. GND .- A_D5
+  A_R5 -. GND .- A_D5
+  
+  subgraph RJ12_B["RJ12 Bus1 (JBC jack)"]
+    B_R1["1 - NC"]
+    B_R2["2 - GND"]
+    B_R3["3 - TX (JBC ->)"]
+    B_R4["4 - RX (<- JBC)"]
+    B_R5["5 - GND"]
+    B_R6["6 - NC"]
+  end
 
-A_R3 -->|TX -> RXD| A_D2
-A_D3 -->|TXD -> RX| A_R4
-A_R2 -. GND .- A_D5
-A_R5 -. GND .- A_D5
+  subgraph DB9_B["DB9 Bus1 (RS-232)"]
+    B_D2["Pin 2 - RXD"]
+    B_D3["Pin 3 - TXD"]
+    B_D5["Pin 5 - GND"]
+  end
 
-%% Optional: mit deinem vorhandenen DB9-Knoten verbinden (ID anpassen!)
-%% Beispiel falls dein Modul-Knoten "A_DB9" heisst:
-%% A_D2 --- A_DB9
-%% A_D3 --- A_DB9
-%% A_D5 --- A_DB9
-
-%% --- RJ12 <-> DB9 Mapping BUS1 (falls Dual-Bus) ---
-subgraph RJ12_B["RJ12 Bus1 (JBC Buchse)"]
-  B_R1["1 - NC"]
-  B_R2["2 - GND"]
-  B_R3["3 - TX (JBC ->)"]
-  B_R4["4 - RX (<- JBC)"]
-  B_R5["5 - GND"]
-  B_R6["6 - NC"]
-end
-
-subgraph DB9_B["DB9 Bus1 (RS-232)"]
-  B_D2["Pin 2 - RXD"]
-  B_D3["Pin 3 - TXD"]
-  B_D5["Pin 5 - GND"]
-end
-
-B_R3 -->|TX -> RXD| B_D2
-B_D3 -->|TXD -> RX| B_R4
-B_R2 -. GND .- B_D5
-B_R5 -. GND .- B_D5
-
-%% Optional: an deinen zweiten DB9-Knoten anbinden (ID anpassen!)
-%% B_D2 --- B_DB9
-%% B_D3 --- B_DB9
-%% B_D5 --- B_DB9
+  B_R3 -->|TX -> RXD| B_D2
+  B_D3 -->|TXD -> RX| B_R4
+  B_R2 -. GND .- B_D5
+  B_R5 -. GND .- B_D5
