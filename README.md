@@ -65,66 +65,91 @@ On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and
 
 ```mermaid
 flowchart LR
-  %% ===== MCU =====
-  subgraph MCU["ESP32 (3V3)"]
-    TX0["GPIO17 TX BUS0"]
-    RX0["GPIO16 RX BUS0"]
-    TX1["GPIO33 TX BUS1"]
-    RX1["GPIO32 RX BUS1"]
+  %% ===== ESP32 NodeMCU =====
+  subgraph MCU["ESP32 NodeMCU (3V3 logic)"]
+    TX0["GPIO17 → TX BUS0"]
+    RX0["GPIO16 ← RX BUS0"]
+    TX1["GPIO33 → TX BUS1"]
+    RX1["GPIO32 ← RX BUS1"]
+    LED_PIN["GPIO21 → SK6812 Data"]
+    REL_PIN["GPIO26 → Relay IN"]
     V3["3V3"]
     GND["GND"]
   end
 
-  %% ===== MAX3232 #1 for BUS0 =====
-  subgraph MAX_A["MAX3232 A (single channel, BUS0)"]
-    A_TIN["TIN"]
-    A_TOUT["TOUT"]
-    A_RIN["RIN"]
-    A_ROUT["ROUT"]
-    A_VCC["VCC"]
-    A_GND["GND"]
+  %% ===== MAX3232 Module BUS0 =====
+  subgraph MAX0["MAX3232 Module – BUS0"]
+    M0_TIN["TIN (from ESP32 TX17)"]
+    M0_ROUT["ROUT (to ESP32 RX16)"]
+    M0_TOUT["TOUT → RS232 TX (to JBC RX)"]
+    M0_RIN["RIN ← RS232 RX (from JBC TX)"]
+    M0_VCC["VCC 3V3"]
+    M0_GND["GND"]
   end
 
-  %% ===== MAX3232 #2 for BUS1 =====
-  subgraph MAX_B["MAX3232 B (single channel, BUS1)"]
-    B_TIN["TIN"]
-    B_TOUT["TOUT"]
-    B_RIN["RIN"]
-    B_ROUT["ROUT"]
-    B_VCC["VCC"]
-    B_GND["GND"]
+  %% ===== MAX3232 Module BUS1 =====
+  subgraph MAX1["MAX3232 Module – BUS1"]
+    M1_TIN["TIN (from ESP32 TX33)"]
+    M1_ROUT["ROUT (to ESP32 RX32)"]
+    M1_TOUT["TOUT → RS232 TX (to JBC RX)"]
+    M1_RIN["RIN ← RS232 RX (from JBC TX)"]
+    M1_VCC["VCC 3V3"]
+    M1_GND["GND"]
   end
 
-  %% ===== Connectors =====
-  subgraph CONN_A["Bus0 connector (DB9 / RJ12)"]
-    A_TX["RS232 TX -> peer RX (DB9 pin 3)"]
-    A_RX["RS232 RX <- peer TX (DB9 pin 2)"]
-    A_G["GND (DB9 pin 5)"]
+  %% ===== Relay Module =====
+  subgraph RELAY["Relay Module (JQC-3FF-S-Z)"]
+    REL_VCC["VCC 3V3/5V"]
+    REL_IN["IN (control from GPIO26)"]
+    REL_GND["GND"]
+    CONTACT["NO / COM contacts → fan or load"]
   end
 
-  subgraph CONN_B["Bus1 connector (DB9 / RJ12)"]
-    B_TX["RS232 TX -> peer RX (DB9 pin 3)"]
-    B_RX["RS232 RX <- peer TX (DB9 pin 2)"]
-    B_G["GND (DB9 pin 5)"]
+  %% ===== LED Strip =====
+  subgraph LEDS["SK6812 LED Strip (GRBW)"]
+    LED_VCC["VCC 5V"]
+    LED_DATA["DIN from GPIO21"]
+    LED_GND["GND"]
   end
 
-  %% ----- TTL wiring -----
-  TX0 --> A_TIN
-  A_ROUT --> RX0
-  TX1 --> B_TIN
-  B_ROUT --> RX1
+  %% ===== BUS0 RS232 Connector =====
+  subgraph RS232_0["BUS0 RJ12/DB9 → JBC Station #1"]
+    B0_TX["TX → JBC RX (RJ12 pin 4 / DB9 pin 3)"]
+    B0_RX["RX ← JBC TX (RJ12 pin 3 / DB9 pin 2)"]
+    B0_GND["GND (RJ12 pin 2+5 / DB9 pin 5)"]
+  end
 
-  %% ----- Power & ground -----
-  V3 --> A_VCC
-  V3 --> B_VCC
-  GND --> A_GND
-  GND --> B_GND
+  %% ===== BUS1 RS232 Connector =====
+  subgraph RS232_1["BUS1 RJ12/DB9 → JBC Station #2"]
+    B1_TX["TX → JBC RX (RJ12 pin 4 / DB9 pin 3)"]
+    B1_RX["RX ← JBC TX (RJ12 pin 3 / DB9 pin 2)"]
+    B1_GND["GND (RJ12 pin 2+5 / DB9 pin 5)"]
+  end
 
-  %% ----- RS232 sides -----
-  A_TOUT --> A_TX
-  A_RX --> A_RIN
-  A_GND --> A_G
+  %% ===== Wiring BUS0 =====
+  TX0 --> M0_TIN
+  M0_ROUT --> RX0
+  V3 --> M0_VCC
+  GND --> M0_GND
+  M0_TOUT --> B0_TX
+  M0_RIN --> B0_RX
+  GND --> B0_GND
 
-  B_TOUT --> B_TX
-  B_RX --> B_RIN
-  B_GND --> B_G
+  %% ===== Wiring BUS1 =====
+  TX1 --> M1_TIN
+  M1_ROUT --> RX1
+  V3 --> M1_VCC
+  GND --> M1_GND
+  M1_TOUT --> B1_TX
+  M1_RIN --> B1_RX
+  GND --> B1_GND
+
+  %% ===== Relay Wiring =====
+  REL_PIN --> REL_IN
+  V3 --> REL_VCC
+  GND --> REL_GND
+
+  %% ===== LED Wiring =====
+  LED_PIN --> LED_DATA
+  V3 --> LED_VCC
+  GND --> LED_GND
