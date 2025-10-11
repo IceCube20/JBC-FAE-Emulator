@@ -67,12 +67,12 @@ On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and
 flowchart LR
   %% ===== MCU =====
   subgraph MCU["ESP32 (3V3)"]
-    M_TX0["GPIO17 — TX BUS0"]
-    M_RX0["GPIO16 — RX BUS0"]
-    M_TX1["GPIO33 — TX BUS1"]
-    M_RX1["GPIO32 — RX BUS1"]
-    M_LED["GPIO21 — SK6812"]
-    M_REL["GPIO26 — Relay"]
+    M_TX0["GPIO17 - TX BUS0"]
+    M_RX0["GPIO16 - RX BUS0"]
+    M_TX1["GPIO33 - TX BUS1"]
+    M_RX1["GPIO32 - RX BUS1"]
+    M_LED["GPIO21 - SK6812"]
+    M_REL["GPIO26 - Relay"]
     M_3V3["3V3"]
     M_GND["GND"]
   end
@@ -111,11 +111,11 @@ flowchart LR
   end
 
   %% ===== TTL wiring (MCU <-> MAX3232) =====
-  M_TX0 -->|"TX"| A_TIN
-  A_ROUT -->|"RX"| M_RX0
+  M_TX0 --> A_TIN
+  A_ROUT --> M_RX0
 
-  M_TX1 -->|"TX"| B_TIN
-  B_ROUT -->|"RX"| M_RX1
+  M_TX1 --> B_TIN
+  B_ROUT --> M_RX1
 
   %% ===== Power & ground =====
   M_3V3 --> X_VCC
@@ -123,26 +123,15 @@ flowchart LR
 
   %% ===== RS-232 side (MAX3232 <-> connectors) =====
   A_TOUT --> A_TX
-  A_RIN  <-- A_RX
-  X_GND -.-> A_GND
+  A_RX --> A_RIN
+  X_GND --- A_GND
 
   B_TOUT --> B_TX
-  B_RIN  <-- B_RX
-  X_GND -.-> B_GND
+  B_RX --> B_RIN
+  X_GND --- B_GND
 
   %% ===== Accessories =====
-  M_LED -->|"data"| LED["SK6812 strip/pixel"]
-  M_REL -->|"coil"| REL["Relay module"]
-  M_GND -.-> LED
-  M_GND -.-> REL
-
-  %% ===== Styling =====
-  classDef mcu fill:#E3F2FD,stroke:#1565C0,color:#0D47A1;
-  classDef max fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
-  classDef conn fill:#FFF3E0,stroke:#EF6C00,color:#E65100;
-  classDef acc fill:#F3E5F5,stroke:#6A1B9A,color:#4A148C,stroke-dasharray:3 3;
-
-  class M_TX0,M_RX0,M_TX1,M_RX1,M_LED,M_REL,M_3V3,M_GND mcu
-  class A_TIN,A_TOUT,A_RIN,A_ROUT,B_TIN,B_TOUT,B_RIN,B_ROUT,X_VCC,X_GND max
-  class RS232A,RS232B,A_TX,A_RX,B_TX,B_RX,A_GND,B_GND,A_RJ,B_RJ conn
-  class LED,REL acc
+  M_LED -->|data| LED["SK6812 strip/pixel"]
+  M_REL -->|coil| REL["Relay module"]
+  M_GND --- LED
+  M_GND --- REL
