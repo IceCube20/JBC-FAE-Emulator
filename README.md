@@ -65,64 +65,56 @@ Bei Breakout-Boards heißen die Pins oft **T1IN/T1OUT, R1IN/R1OUT** (Kanal A) un
 
 ```mermaid
 flowchart LR
-  subgraph MCU[ESP32]
-    TX0a["TX2 = GPIO17 (Bus0 →)"]
-    RX0a["RX2 = GPIO16 (← Bus0)"]
-    TX1a["TX1 = GPIO33 (Bus1 →)"]
-    RX1a["RX1 = GPIO32 (← Bus1)"]
-    LED21["GPIO21 → SK6812 DIN"]
-    REL26["GPIO26 → Relay IN"]
-    V33["3V3"]
-    Gm["GND"]
+  %% ============ JBC RJ12 ============
+  subgraph RJ[JBC Station – RJ12]
+    RJ2["Pin 2 — GND"]
+    RJ3["Pin 3 — TXD (JBC →)"]
+    RJ4["Pin 4 — RXD (← JBC)"]
+    RJ5["Pin 5 — GND"]
   end
 
-  subgraph MAX[Dual-Channel MAX3232]
-    Vcc["VCC (3V3)"]
+  %% ============ DB9 ============
+  subgraph DB9[DB9 (Female an Station)]
+    D2["Pin 2 — RXD (empfängt von JBC TX)"]
+    D3["Pin 3 — TXD (sendet zur JBC RX)"]
+    D5["Pin 5 — GND"]
+  end
+
+  %% ============ MAX3232 (ein Kanal) ============
+  subgraph MAX[MAX3232 (ein Kanal)]
+    Vcc["VCC (3V3/5V)"]
     Gx["GND"]
-    %% Channel A (Bus0)
-    T1IN["T1IN  (from ESP32 TX17)"]
-    T1OUT["T1OUT (to RS-232 Bus0 TX→peer RX)"]
-    R1IN["R1IN  (from RS-232 Bus0 RX←peer TX)"]
-    R1OUT["R1OUT (to ESP32 RX16)"]
-    %% Channel B (Bus1)
-    T2IN["T2IN  (from ESP32 TX33)"]
-    T2OUT["T2OUT (to RS-232 Bus1 TX→peer RX)"]
-    R2IN["R2IN  (from RS-232 Bus1 RX←peer TX)"]
-    R2OUT["R2OUT (to ESP32 RX32)"]
+    T1IN["T1IN  (from MCU TX)"]
+    T1OUT["T1OUT (to DB9 Pin 3 TXD)"]
+    R1IN["R1IN  (from DB9 Pin 2 RXD)"]
+    R1OUT["R1OUT (to MCU RX)"]
   end
 
-  subgraph B0[RS-232 Bus 0]
-    B0TX["TXD → Gegenstelle RXD"]
-    B0RX["RXD ← Gegenstelle TXD"]
-    B0G["GND"]
+  %% ============ MCU ============
+  subgraph MCU[MCU]
+    V["3V3 (ESP32) / 5V (Mega)"]
+    Gm["GND"]
+    TX["TX (→)"]
+    RX["RX (←)"]
   end
 
-  subgraph B1[RS-232 Bus 1]
-    B1TX["TXD → Gegenstelle RXD"]
-    B1RX["RXD ← Gegenstelle TXD"]
-    B1G["GND"]
-  end
+  %% RJ12 ↔ DB9 (Kabel/Adapter)
+  RJ3 -->|JBC TXD| D2
+  D3 -->|DB9 TXD| RJ4
+  RJ2 -. GND .- D5
+  RJ5 -. GND .- D5
 
-  %% Power
-  V33 --> Vcc
-  Gm  --> Gx
+  %% DB9 ↔ MAX3232 (RS-232 Seite)
+  D2 --> R1IN
+  T1OUT --> D3
+  D5 --> Gx
 
-  %% Channel A
-  TX0a --> T1IN
-  R1OUT --> RX0a
-  T1OUT --> B0TX
-  B0RX  --> R1IN
+  %% MAX3232 ↔ MCU (TTL Seite)
+  TX --> T1IN
+  R1OUT --> RX
+  V --> Vcc
+  Gm --> Gx
 
-  %% Channel B
-  TX1a --> T2IN
-  R2OUT --> RX1a
-  T2OUT --> B1TX
-  B1RX  --> R2IN
-
-  %% Grounds
-  Gm --> B0G
-  Gm --> B1G
-
-  %% Extras
-  LED21 -.->|"DIN"| SK6812((SK6812 GRBW))
-  REL26 -.->|"IN"| REL((Relay Module))
+  %% Hinweis
+  classDef note fill:#fff,stroke:#bbb,color:#333,stroke-dasharray: 3 3;
+  N1(["Hinweis: Falls nichts ankommt, RJ12 Pins 3/4 tauschen (manche Kabel sind gedreht)."]):::note
