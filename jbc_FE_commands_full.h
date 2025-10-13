@@ -1,4 +1,11 @@
 // SPDX-License-Identifier: MIT OR GPL-2.0-only
+// SPDX-License-Identifier: MIT OR GPL-2.0-only
+//
+// Legal Notice:
+// This project re-implements only functional protocol behavior (P02) for interoperability purposes.
+// It contains no OEM firmware, no cryptographic keys, and does not circumvent any technical protection measures.
+// Protocol constants, enums, and IDs are interface identifiers required for device communication.
+// “JBC” is a trademark of its respective owners; this is an unofficial, independent project not affiliated with JBC S.A.
 
 #pragma once
 
