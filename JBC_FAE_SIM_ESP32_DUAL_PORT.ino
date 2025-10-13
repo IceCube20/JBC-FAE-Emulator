@@ -4,6 +4,14 @@
   ===========================================================================
   DE / Deutsch
   ------------
+ 
+
+ Rechtlicher Hinweis:
+ Dieses Projekt implementiert nur das **funktionale Protokollverhalten (P02)** zur Interoperabilität.
+ Es enthält **keine OEM-Firmware**, **keine kryptografischen Schlüssel** und **umgeht keine technischen Schutzmaßnahmen**.
+ Protokollkonstanten, Enums und IDs sind **Schnittstellenbezeichner**, die für die Kommunikation mit den Geräten erforderlich sind.
+ „JBC“ ist eine Marke der jeweiligen Eigentümer; dies ist ein **inoffizielles, unabhängiges Projekt**, das **nicht mit JBC S.A. verbunden** ist.
+
 
   Überblick
   • Emuliert eine JBC FAE Base-Unit auf bis zu zwei unabhängigen Bussen (BUS_COUNT=1|2).
@@ -84,6 +92,13 @@
   ---------------------------------------------------------------------------
   EN / English
   ------------
+ 
+
+ Legal Notice:
+ This project re-implements only functional protocol behavior (P02) for interoperability purposes.
+ It contains no OEM firmware, no cryptographic keys, and does not circumvent any technical protection measures.
+ Protocol constants, enums, and IDs are interface identifiers required for device communication.
+ “JBC” is a trademark of its respective owners; this is an unofficial, independent project not affiliated with JBC S.A.
 
   Overview
   • Emulates a JBC FAE base unit on up to two independent buses (BUS_COUNT=1|2).
@@ -2456,3 +2471,4 @@ void loop(){
     }
   }
 }
+
