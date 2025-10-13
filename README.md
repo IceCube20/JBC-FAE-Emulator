@@ -21,6 +21,33 @@ LED status (SK6812), relay after-run, persistence (NVS/EEPROM), and **RS-232 via
 
 ---
 
+## CLI Example
+
+[NVS]
+bus0 DeviceID len=30 ascii="84495820251011193809F283" | addr=0x12
+bus1 DeviceID len=30 ascii="84495820251011194011F283" | addr=0x18
+[CLI] type 'help' for commands
+[CFG] buses=2 | tstop(w/s)=10/0 | selectflow=100 | suctionlevel=3 | filter(life/sat)=0/0 | stat_error=0 (0x0)
+[FW] 02:F2:EMU_01:8886612:0051112 | by IceCube20 | build Oct 11 2025 19:27:59
+Commands:
+help
+? (show DEVID/Addr and other Data)
+show cfg
+show buses
+set buses <1|2>
+save / load
+erase [eeprom] – clear NVS/EEPROM and reload defaults (use 'save' to persist)
+set tstop_work <sec> afterrun Relay in seconds. After applying the time, save to EEPROM with <save>. With the DDE you can configure it directly in the station.
+set tstop_stand <sec>
+set suctionlevel <0..3>
+set selectflow <0..1000>
+set stand_intakes <0|1>
+set filter_life <u16>
+set filter_sat <u16>
+STOPx/WARNx, +STOPx, -STOPx, NOERR, ?ERR
+
+---
+
 ## Legal Notice
 
 This project re-implements only functional protocol behavior (P02) for interoperability purposes.  
