@@ -103,9 +103,9 @@ On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and
 ## Wiring Diagram
 
 <p align="center">
-  <img src="JBC FAE Emulator_Steckplatine.png" alt="JBC Link wiring diagram" width="900">
+  <img src="JBC FAE Emulator_Steckplatine.jpg" alt="JBC Link wiring diagram" width="900">
 </p>
 
-<sub>SVG version available at <code>JBC FAE Emulator_Steckplatine.png</code>.</sub>
+<sub>SVG version available at <code>JBC FAE Emulator_Steckplatine.jpg</code>.</sub>
 
 ---
