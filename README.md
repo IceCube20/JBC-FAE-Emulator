@@ -103,3 +103,10 @@ Protocol constants, enums, and IDs are interface identifiers required for device
 </p>
 
 ---
+## Wiring Diagram JBC Station Cable
+
+<p align="center">
+  <img src="JBC Station Wiring.jpg" alt="JBC Link wiring diagram" width="900">
+</p>
+
+---
