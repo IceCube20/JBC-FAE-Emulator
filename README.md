@@ -88,10 +88,18 @@ Protocol constants, enums, and IDs are interface identifiers required for device
 
 
 
-## Wiring Diagram
+## Wiring Diagram ESP32
 
 <p align="center">
   <img src="JBC FAE Emulator_Steckplatine.jpg" alt="JBC Link wiring diagram" width="900">
+</p>
+
+---
+
+## Wiring Diagram Arduino Mega
+
+<p align="center">
+  <img src="JBC FAE Emulator Arduino Mega_Steckplatine.jpg" alt="JBC Link wiring diagram" width="900">
 </p>
 
 ---
