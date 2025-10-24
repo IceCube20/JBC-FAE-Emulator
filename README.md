@@ -11,13 +11,11 @@ LED status (SK6812), relay after-run, persistence (NVS/EEPROM), and **RS-232 via
 ## Features
 
 - **Dual bus** (BUS_COUNT=1|2), each bus with its own **DeviceID** & **address**
-- **Base-Link** handshake (NAK/SYN/ACK/SOH) → **P02**
-- **P02 parser**: length-based, DLE stuffing, **XOR BCC (seed 0x01)**
-- **Relay** with **after-run owner** & “continuous suction”
+- **Relay** with **after-run** Configuring in the DDE and for lower Station Models over the CLI
 - **Auto-save** for writes (debounced)
 - **SK6812 GRBW** link/status per bus
 - **Persistence**: ESP32 = **NVS** / Mega = **EEPROM**
-- **RS-232** per bus via **MAX3232** (dual-channel possible)
+- **RS-232** per bus via **DSub9 MAX3232 to ttl**
 
 ---
 
@@ -63,10 +61,10 @@ Protocol constants, enums, and IDs are interface identifiers required for device
 
 | Function              | Pin |
 |----------------------:|:---:|
-| BUS0 RX (Serial2)     | 16  |
-| BUS0 TX (Serial2)     | 17  |
-| BUS1 RX (Serial1)     | 32  |
-| BUS1 TX (Serial1)     | 33  |
+| BUS0 RX (Serial1)     | 16  |
+| BUS0 TX (Serial1)     | 17  |
+| BUS1 RX (Serial2)     | 32  |
+| BUS1 TX (Serial2)     | 33  |
 | SK6812 **LED_PIN**    | 21  |
 | Relay **RELAY_PIN**   | 26  |
 | MAX3232 **VCC**       | 3V3 |
@@ -84,20 +82,10 @@ Protocol constants, enums, and IDs are interface identifiers required for device
 | MAX3232 **VCC**       | 5V  |
 
 > **Note:** MAX3232 works with **3.3 V (ESP32)** and **5 V (Mega)**.  
-> **GND** must be **common** between MCU, MAX3232, and the bus.
+> **GND** must be **common** between MCU and MAX3232.
 
 ---
 
-## RS-232 wiring with MAX3232 (dual-channel)
-
-**Each bus** needs 1× TX and 1× RX → the MAX3232 chip has **2 drivers + 2 receivers** → **one chip can serve both buses** (Ch.A = Bus0, Ch.B = Bus1).  
-On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and **T2IN/T2OUT, R2IN/R2OUT** (channel B).
-
-- **MCU-TX → TnIN**, **TnOUT → RS-232 TX (to peer RX)**
-- **MCU-RX ← RnOUT**, **RnIN  ← RS-232 RX (from peer TX)**
-- Tie **GND** together
-
-### ESP32 + MAX3232 + 2× RS-232 (JBC Bus 0/1)
 
 
 ## Wiring Diagram
@@ -105,7 +93,5 @@ On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and
 <p align="center">
   <img src="JBC FAE Emulator_Steckplatine.jpg" alt="JBC Link wiring diagram" width="900">
 </p>
-
-<sub>SVG version available at <code>JBC FAE Emulator_Steckplatine.jpg</code>.</sub>
 
 ---
