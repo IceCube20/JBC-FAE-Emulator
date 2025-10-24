@@ -1,7 +1,7 @@
 # JBC FAE Emulator – to control your Own Fume Extractor with your JBC Soldering Station without the Original JBC FAE 
--This code runs on ESP32 and Arduino Mega
--Dual Bus (Max 2 JBC Soldering Stations)
--With JBC DDE or DME you can set the relay afterrun in the Stations! The lower Models must the afterun configured in the Controler CLI (Arduino IDE Console)
+This code runs on ESP32 and Arduino Mega.
+Dual Bus (Max 2 JBC Soldering Stations).
+With JBC DDE or DME you can set the relay afterrun in the Stations! The lower Models must the afterun configured in the Controler CLI (Arduino IDE Console).
 
 **Emulates a JBC FAE base unit** with a robust P02 parser (DLE byte-stuffing, XOR BCC) on **two independent buses**.  
 LED status (SK6812), relay after-run, persistence (NVS/EEPROM), and **RS-232 via MAX3232**.
