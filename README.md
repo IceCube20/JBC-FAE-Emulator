@@ -99,4 +99,13 @@ On breakout boards the pins are often **T1IN/T1OUT, R1IN/R1OUT** (channel A) and
 
 ### ESP32 + MAX3232 + 2× RS-232 (JBC Bus 0/1)
 
-![Circuit Diagram](images/JBC FAE Emulator_Steckplatine.png)
+
+## Wiring Diagram
+
+<p align="center">
+  <img src="JBC FAE Emulator_Steckplatine.png" alt="JBC Link wiring diagram" width="900">
+</p>
+
+<sub>SVG version available at <code>JBC FAE Emulator_Steckplatine.png</code>.</sub>
+
+---
