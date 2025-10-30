@@ -45,7 +45,7 @@ LED status (SK6812), relay after-run, persistence (NVS/EEPROM), and **RS-232 via
 - set stand_intakes <0|1>  - No function! Its for internal testing
 - set filter_life <u16>    - Set your own Filterlife in % (shown in JBC DDE FAE Menu)
 - set filter_sat <u16>     - Set your own Filtersaturation in % (shown in JBC DDE FAE Menu)
--STOPx/WARNx, NOERR, ERR  - STOP1-11 Set Station errors, WARN1-2 Set Station warnings, NOERR resets Stations errors or warnings and ERR show all Error and Warnings they exist
+- STOPx/WARNx, NOERR, ERR  - STOP1-11 Set Station errors, WARN1-2 Set Station warnings, NOERR resets Stations errors or warnings and ERR show all Error and Warnings they exist
 
 
 ---
