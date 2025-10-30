@@ -4,14 +4,6 @@
   ===========================================================================
   DE / Deutsch
   ------------
- 
-
- Rechtlicher Hinweis:
- Dieses Projekt implementiert nur das **funktionale Protokollverhalten (P02)** zur Interoperabilität.
- Es enthält **keine OEM-Firmware**, **keine kryptografischen Schlüssel** und **umgeht keine technischen Schutzmaßnahmen**.
- Protokollkonstanten, Enums und IDs sind **Schnittstellenbezeichner**, die für die Kommunikation mit den Geräten erforderlich sind.
- „JBC“ ist eine Marke der jeweiligen Eigentümer; dies ist ein **inoffizielles, unabhängiges Projekt**, das **nicht mit JBC S.A. verbunden** ist.
-
 
   Überblick
   • Emuliert eine JBC FAE Base-Unit auf bis zu zwei unabhängigen Bussen (BUS_COUNT=1|2).
@@ -39,7 +31,7 @@
   LEDs (SK6812 GRBW, Adafruit_NeoPixel)
   • Pro Bus 2 LEDs: 0=Link, 1=Status.
     Link: DOWN=rot „breathing“, CONNECTING=gelb blinkend, UP=grün; FW-Idle (keine IntakeActivation seit LED_FW_IDLE_MS): gelb blinkend.
-    Status: Blau=WORK aktiv (dieser Bus), Türkis=Nachlauf (Owner), Rot blinkend=STOP, Gelb blinkend=WARN, Weiß „breathing“=Standby.
+    Status: Blau=WORK aktiv (dieser Bus), Lila=Nachlauf (Owner), Rot blinkend=STOP, Gelb blinkend=WARN, Weiß „breathing“=Standby.
   • Defaults: LED_ENABLE=1, LED_PIN=21 (ESP32) / 6 (MEGA), LED_BRIGHTNESS_MAX=40.
   • Timing-Schutz: LED_SHOW_MIN_GAP_US = 10000UL (AVR) / 1500UL (andere).
     Tipp: Auf MEGA ggf. LED_ENABLE=0 oder GAP erhöhen (sonst BCC-Fehler möglich).
@@ -92,13 +84,6 @@
   ---------------------------------------------------------------------------
   EN / English
   ------------
- 
-
- Legal Notice:
- This project re-implements only functional protocol behavior (P02) for interoperability purposes.
- It contains no OEM firmware, no cryptographic keys, and does not circumvent any technical protection measures.
- Protocol constants, enums, and IDs are interface identifiers required for device communication.
- “JBC” is a trademark of its respective owners; this is an unofficial, independent project not affiliated with JBC S.A.
 
   Overview
   • Emulates a JBC FAE base unit on up to two independent buses (BUS_COUNT=1|2).
@@ -126,7 +111,7 @@
   LEDs (SK6812 GRBW, Adafruit_NeoPixel)
   • Two LEDs per bus: 0=link, 1=status.
     Link: DOWN=red “breathing”, CONNECTING=yellow blink, UP=green; FW idle loop (no IntakeActivation since LED_FW_IDLE_MS): yellow blink.
-    Status: Blue=WORK active (this bus), Cyan=after-run (owner), Red blink=STOP, Yellow blink=WARN, White “breathing”=standby.
+    Status: Blue=WORK active (this bus), Magenta=after-run (owner), Red blink=STOP, Yellow blink=WARN, White “breathing”=standby.
   • Defaults: LED_ENABLE=1, LED_PIN=21 (ESP32) / 6 (MEGA), LED_BRIGHTNESS_MAX=40.
   • Timing guard: LED_SHOW_MIN_GAP_US = 10000UL (AVR) / 1500UL (others).
     Tip: On MEGA consider LED_ENABLE=0 or increase GAP to avoid BCC issues.
@@ -253,7 +238,7 @@
 #define BUS_COUNT 2
 #endif
 #if BUS_COUNT < 1 || BUS_COUNT > 2
-#error "Dieses Beispiel unterstützt BUS_COUNT nur 1 oder 2"
+#error "Es wird nur BUS_COUNT nur 1 oder 2 unterstützt"
 #endif
 
 #define MAX_BUSES 2
@@ -307,7 +292,7 @@ static inline void relay_init(){
   #define LED_COUNT_MAX (MAX_BUSES*2)     // Puffer für max. 2 Busse
   #endif
   #ifndef LED_BRIGHTNESS_MAX
-  #define LED_BRIGHTNESS_MAX 40
+  #define LED_BRIGHTNESS_MAX 200
   #endif
   #ifndef LED_BREATH_PERIOD_MS
   #define LED_BREATH_PERIOD_MS 5000
@@ -339,9 +324,9 @@ static inline void relay_init(){
 
 // ===== FAE-Konfiguration =====================================================
 #define FE_MODEL  "F2" // Wichtig! nur F2 wird von DDE und JTSE angenommen.
-#define FE_CAP    "EMU_01" // oder CAP_02
-#define FE_SW7    "8886612"
-#define FE_HW7    "0051112"
+#define FE_CAP    "EMU_02" // oder CAP_02
+#define FE_SW7    "V1.0.10" // 8886612
+#define FE_HW7    "ESP32Devkit1" // 0051112
 
 static PROGMEM_STR FE_FW_STR[] = "02:" FE_MODEL ":" FE_CAP ":" FE_SW7 ":" FE_HW7;
 static_assert(sizeof(FE_FW_STR) - 1 <= 64, "FW string too long");
@@ -486,8 +471,8 @@ struct {
 
 // ===== Protokoll Konstanten ==================================================
 static const uint8_t DLE = 0x10, STX = 0x02, ETX = 0x03;
-static const uint8_t FID_HS = 0xFD;
-static const uint8_t FID_FE = 0xFE;
+static const uint8_t FID_HS = 0xFD; //0xFD
+static const uint8_t FID_FE = 0xFE; //0xFE
 static const uint8_t CTRL_SYN_P02 = 0x16;
 
 // ===== Bus-Kontext ===========================================================
@@ -1069,6 +1054,8 @@ static inline void maybe_dump_state_on_write(){
 #endif
 }
 
+
+
 // ===== Fehlerkürzel / Warnungen -> Bitmaske + Beschreibung ==================
 // Hinweis: KEIN PSTR/F() in globalen Initialisierern benutzen (AVR)!
 struct ErrInfo {
@@ -1080,18 +1067,59 @@ struct ErrInfo {
 #if defined(ARDUINO_ARCH_AVR)
 // Texte im Flash ablegen und als Zeiger verwenden
 static const char E_STOP1[]  PROGMEM = "Standzeit Filter ist abgelaufen";
+static const char E_STOP1_EN[]  PROGMEM = "Filter lifetime expired";
+
 static const char E_WARN1[]  PROGMEM = "Standzeit Filter endet in X Tagen";
+static const char E_WARN1_EN[]  PROGMEM = "Filter lifetime ends in X days";
+
 static const char E_STOP2[]  PROGMEM = "Der Filter ist Verstopft";
+static const char E_STOP2_EN[]  PROGMEM = "The filter is clogged";
+
 static const char E_WARN2[]  PROGMEM = "Der Filter ist kurz davor zu Verstopfen";
+static const char E_WARN2_EN[]  PROGMEM = "The filter is about to clog";
+
 static const char E_STOP3[]  PROGMEM = "Kein Filter entdeckt!";
+static const char E_STOP3_EN[]  PROGMEM = "No filter detected!";
+
 static const char E_STOP4[]  PROGMEM = "Filter Abdeckung offen";
+static const char E_STOP4_EN[]  PROGMEM = "Filter cover open";
+
 static const char E_STOP5[]  PROGMEM = "Gebläse beschädigt";
+static const char E_STOP5_EN[]  PROGMEM = "Blower damaged";
+
 static const char E_STOP7[]  PROGMEM = "Ventilfehler";
+static const char E_STOP7_EN[]  PROGMEM = "Valve error";
+
 static const char E_STOP8[]  PROGMEM = "Überstrom am Hilfsport entdeckt";
+static const char E_STOP8_EN[]  PROGMEM = "Overcurrent detected on auxiliary port";
+
 static const char E_STOP9[]  PROGMEM = "Pedalfehler";
+static const char E_STOP9_EN[]  PROGMEM = "Pedal error";
+
 static const char E_STOP10[] PROGMEM = "Systemfehler FAE";
+static const char E_STOP10_EN[] PROGMEM = "FAE system error";
+
 static const char E_STOP11[] PROGMEM = "Systemfehler FAE";
+static const char E_STOP11_EN[] PROGMEM = "FAE system error";
+
 #define DESC(x) (reinterpret_cast<flashstr_t>(x))
+
+
+// #if defined(ARDUINO_ARCH_AVR)
+// // Texte im Flash ablegen und als Zeiger verwenden
+// static const char E_STOP1[]  PROGMEM = "Standzeit Filter ist abgelaufen";
+// static const char E_WARN1[]  PROGMEM = "Standzeit Filter endet in X Tagen";
+// static const char E_STOP2[]  PROGMEM = "Der Filter ist Verstopft";
+// static const char E_WARN2[]  PROGMEM = "Der Filter ist kurz davor zu Verstopfen";
+// static const char E_STOP3[]  PROGMEM = "Kein Filter entdeckt!";
+// static const char E_STOP4[]  PROGMEM = "Filter Abdeckung offen";
+// static const char E_STOP5[]  PROGMEM = "Gebläse beschädigt";
+// static const char E_STOP7[]  PROGMEM = "Ventilfehler";
+// static const char E_STOP8[]  PROGMEM = "Überstrom am Hilfsport entdeckt";
+// static const char E_STOP9[]  PROGMEM = "Pedalfehler";
+// static const char E_STOP10[] PROGMEM = "Systemfehler FAE";
+// static const char E_STOP11[] PROGMEM = "Systemfehler FAE";
+// #define DESC(x) (reinterpret_cast<flashstr_t>(x))
 
 static const ErrInfo kErrMap[] = {
   {"STOP1",   1u,    DESC(E_STOP1)},
@@ -1108,23 +1136,27 @@ static const ErrInfo kErrMap[] = {
   {"STOP11",  4096u, DESC(E_STOP11)},
 };
 #else
+
 // Nicht-AVR: normale C-Strings
 #define DESC(x) (x)
 static const ErrInfo kErrMap[] = {
-  {"STOP1",   1u,    "Standzeit Filter ist abgelaufen"},
-  {"WARN1",   2u,    "Standzeit Filter endet in X Tagen"},
-  {"STOP2",   4u,    "Der Filter ist Verstopft"},
-  {"WARN2",   8u,    "Der Filter ist kurz davor zu Verstopfen"},
-  {"STOP3",   16u,   "Kein Filter entdeckt!"},
-  {"STOP4",   32u,   "Filter Abdeckung offen"},
-  {"STOP5",   64u,   "Gebläse beschädigt"},
-  {"STOP7",   256u,  "Ventilfehler"},
-  {"STOP8",   512u,  "Überstrom am Hilfsport entdeckt"},
-  {"STOP9",   1024u, "Pedalfehler"},
-  {"STOP10",  2048u, "Systemfehler FAE"},
-  {"STOP11",  4096u, "Systemfehler FAE"},
+  {"STOP1",   1u,    "Standzeit Filter ist abgelaufen / Filter lifetime expired"},
+  {"WARN1",   2u,    "Standzeit Filter endet in X Tagen / Filter lifetime ends in X days"},
+  {"STOP2",   4u,    "Der Filter ist Verstopft / The filter is clogged"},
+  {"WARN2",   8u,    "Der Filter ist kurz davor zu Verstopfen / The filter is about to clog"},
+  {"STOP3",   16u,   "Kein Filter entdeckt! / No filter detected!"},
+  {"STOP4",   32u,   "Filter Abdeckung offen / Filter cover open"},
+  {"STOP5",   64u,   "Gebläse beschädigt / Blower damaged"},
+  {"STOP7",   256u,  "Ventilfehler / Valve error"},
+  {"STOP8",   512u,  "Überstrom am Hilfsport entdeckt / Overcurrent detected on auxiliary port"},
+  {"STOP9",   1024u, "Pedalfehler / Pedal error"},
+  {"STOP10",  2048u, "Systemfehler FAE / FAE system error"},
+  {"STOP11",  4096u, "Systemfehler FAE / FAE system error"},
 };
 #endif
+
+
+
 
 static const uint16_t ERR_MASK_WARN = (2u | 8u);
 static inline bool has_stop_error(uint16_t e){ return (e & ~ERR_MASK_WARN) != 0; }
@@ -1232,25 +1264,25 @@ static void print_persist_diag(){
 
 static void cli_show_help(){
   DBG.println(F("Commands:"));
-  DBG.println(F("  help"));
-  DBG.println(F("  ? (show DEVID/Addr and other Data)"));
-  DBG.println(F("  show cfg"));
-  DBG.println(F("  show buses"));
-  DBG.println(F("  set buses <1|2>"));
-  DBG.println(F("  save / load"));
-  DBG.println(F("  erase [eeprom]     – clear NVS/EEPROM and reload defaults (use 'save' to persist)"));
-  DBG.println(F("  set tstop_work <sec>"));
-  DBG.println(F("  set tstop_stand <sec>"));
-  DBG.println(F("  set suctionlevel <0..3>"));
-  DBG.println(F("  set selectflow <0..1000>"));
+  DBG.println(F("  help                     - Show this Help"));
+  DBG.println(F("  ?                        - Show DEVID/Addr and other Data) "));
+  DBG.println(F("  show cfg                 - Show the actual Configuration"));
+  DBG.println(F("  show buses               - Show actual selected Buscount"));
+  DBG.println(F("  set buses <1|2>          - select one or two JBC Stations to connect"));
+  DBG.println(F("  save / load              - Save or Load configuration Data from EEPROM"));
+  DBG.println(F("  erase [eeprom]           - clear NVS/EEPROM and reload defaults (use 'save' to persist) "));
+  DBG.println(F("  set tstop_work <sec>     - Select the Relay afterrun time in seconds (for the DDE, you can set it up in the Stations Menu)"));
+  DBG.println(F("  set tstop_stand <sec>    - No function! Its for internal testing"));
+  DBG.println(F("  set suctionlevel <0..3>  - No function! Its for internal testing"));
+  DBG.println(F("  set selectflow <0..1000> - No function! Its for internal testing"));
   //DBG.println(F("  set flow <0..1000>"));
   //DBG.println(F("  set speed <rpm>"));
   //DBG.println(F("  set pedal_act <0|1>"));
   //DBG.println(F("  set pedal_mode <0|1|2>"));
-  DBG.println(F("  set stand_intakes <0|1>"));
-  DBG.println(F("  set filter_life <u16>"));
-  DBG.println(F("  set filter_sat <u16>"));
-  DBG.println(F("  STOPx/WARNx, +STOPx, -STOPx, NOERR, ?ERR"));
+  DBG.println(F("  set stand_intakes <0|1>  - No function! Its for internal testing"));
+  DBG.println(F("  set filter_life <u16>    - Set your own Filterlife in % (shown in JBC DDE FAE Menu)"));
+  DBG.println(F("  set filter_sat <u16>     - Set your own Filtersaturation in % (shown in JBC DDE FAE Menu)"));
+  DBG.println(F("  STOPx/WARNx, NOERR, ERR  - STOP1-11 Set Station errors, WARN1-2 Set Station warnings, NOERR resets Stations errors or warnings and ERR show all Error and Warnings they exist"));
 }
 static void cli_show_cfg(){
   DBG.print(F("[CFG] buses=")); DBG.print(g_bus_count);
@@ -1261,7 +1293,7 @@ static void cli_show_cfg(){
   //DBG.print(F(" | flow_x1000=")); DBG.print(st.flow_x1000);
   //DBG.print(F(" | pedal_act=")); DBG.print(cfg.pedal_act);
   //DBG.print(F(" | pedal_mode=")); DBG.print(cfg.pedal_mode);
-  //DBG.print(F(" | stand_intakes=")); DBG.print(cfg.stand_intakes);
+  DBG.print(F(" | stand_intakes=")); DBG.print(cfg.stand_intakes);
   DBG.print(F(" | filter(life/sat)=")); DBG.print(st.filterLife); DBG.print('/'); DBG.print(st.filterSaturation);
   DBG.print(F(" | stat_error=")); DBG.print((unsigned)st.statError);
   DBG.print(F(" (0x")); DBG.print(st.statError, HEX); DBG.println(F(")"));
@@ -1297,7 +1329,7 @@ static void cli_show_err_table(){
     if (e.desc) DBG.print(e.desc);
     DBG.println();
   }
-  DBG.println(F("Hinweis: +STOP1 setzt Bit, -STOP1 löscht Bit, nur STOP1 setzt ausschließlich dieses Bit."));
+  DBG.println(F("Hinweis: Es kann nur ein Fehler oder eine Warnung Emuliert werden."));
 }
 static void cli_show_active_errors(uint16_t e){
   if (e == 0){
@@ -1419,7 +1451,7 @@ static void cli_handle_line(char* line){
   }
 
   if(!strcasecmp(argv[0],"NOERR")){ cli_apply_stat(0); DBG.println(F("[CLI] ok")); return; }
-  if(!strcasecmp(argv[0],"ERR") || !strcasecmp(argv[0],"?ERR")){
+  if(!strcasecmp(argv[0],"ERR") || !strcasecmp(argv[0],"err")){
     DBG.print(F("[CLI] stat_error=")); 
     DBG.print((unsigned)st.statError); 
     DBG.print(F(" (0x")); DBG.print(st.statError, HEX); DBG.println(F(")"));
@@ -2273,12 +2305,19 @@ static void leds_render_bus(uint8_t i){
     return;
   }
 
-  // 2) Nachlauf (nur Owner zeigt ihn an)
+  // 2) Nachlauf (nur Owner zeigt ihn an) — blinkend lila, in der dunklen Phase weißes "breathing"
   if (afterrun_me) {
-    set_led_idx(statIdx, 0, lv, lv, 0); // Türkis
+    bool on = ((now / (LED_BLINK_PERIOD_MS/2)) % 2) == 0;
+    uint8_t v = on ? LED_BRIGHTNESS_MAX : 0;
+    if (on) {
+      // Lila hell
+      set_led_idx(statIdx, v, 0, v, 0);
+    } else {
+      // In der "dunklen" Phase Weiß atmen (lv ist breath_level)
+      set_led_idx(statIdx, 0, 0, 0, 0);
+    }
     return;
   }
-
   // 3) Fehler nur anzeigen, wenn nicht aktiv / kein Nachlauf
   const bool stopErr = has_stop_error(st.statError);
   const bool warnErr = has_warn_error(st.statError);
@@ -2471,4 +2510,3 @@ void loop(){
     }
   }
 }
-
