@@ -77,7 +77,11 @@
   Bekannte Hinweise
   • MEGA + SK6812: Zu kurze Render-Abstände können UART stören → BCC-Mismatch.
     Abhilfe: LED_ENABLE=0 oder LED_SHOW_MIN_GAP_US erhöhen.
-
+  • Rechtlicher Hinweis
+    Dieses Projekt implementiert nur die funktionale Protokollverhalten (P02) zur Interoperabilität nach.
+    Es enthält keine OEM-Firmware, keine kryptografischen Schlüssel und umgeht keine technischen Schutzmaßnahmen.
+    Protokollkonstanten, Aufzählungen und IDs sind Schnittstellenkennungen, die für die Gerätekommunikation erforderlich sind.
+    „JBC“ ist ein eingetragenes Warenzeichen seiner jeweiligen Eigentümer; dies ist ein inoffizielles, unabhängiges Projekt, das nicht mit JBC S.A. verbunden ist.
   Autor / Build
   • by IceCube20 – FW-Banner zeigt Kennung und Build-Timestamp.
 
@@ -157,7 +161,11 @@
   Notes
   • MEGA + SK6812: short render gaps can disturb UART → BCC mismatch.
     Mitigation: disable LEDs or increase LED_SHOW_MIN_GAP_US.
-
+  • Legal Notice
+    This project re-implements only functional protocol behavior (P02) for interoperability purposes.
+    It contains no OEM firmware, no cryptographic keys, and does not circumvent any technical protection measures.
+    Protocol constants, enums, and IDs are interface identifiers required for device communication.
+    “JBC” is a trademark of its respective owners; this is an unofficial, independent project not affiliated with JBC S.A.
   Author / Build
   • by IceCube20 – firmware banner shows ID and build timestamp.
 */
