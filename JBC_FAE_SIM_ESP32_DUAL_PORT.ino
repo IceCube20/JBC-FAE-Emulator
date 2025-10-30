@@ -333,8 +333,8 @@ static inline void relay_init(){
 // ===== FAE-Konfiguration =====================================================
 #define FE_MODEL  "F2" // Wichtig! nur F2 wird von DDE und JTSE angenommen.
 #define FE_CAP    "EMU_02" // oder CAP_02
-#define FE_SW7    "V1.0.10" // 8886612
-#define FE_HW7    "ESP32Devkit1" // 0051112
+#define FE_SW7    "8881031" // 8886612
+#define FE_HW7    "0051123" // 0051112
 
 static PROGMEM_STR FE_FW_STR[] = "02:" FE_MODEL ":" FE_CAP ":" FE_SW7 ":" FE_HW7;
 static_assert(sizeof(FE_FW_STR) - 1 <= 64, "FW string too long");
@@ -1072,62 +1072,26 @@ struct ErrInfo {
   flashstr_t  desc;   // auf AVR: __FlashStringHelper*, sonst const char*
 };
 
-#if defined(ARDUINO_ARCH_AVR)
-// Texte im Flash ablegen und als Zeiger verwenden
-static const char E_STOP1[]  PROGMEM = "Standzeit Filter ist abgelaufen";
-static const char E_STOP1_EN[]  PROGMEM = "Filter lifetime expired";
 
-static const char E_WARN1[]  PROGMEM = "Standzeit Filter endet in X Tagen";
-static const char E_WARN1_EN[]  PROGMEM = "Filter lifetime ends in X days";
-
-static const char E_STOP2[]  PROGMEM = "Der Filter ist Verstopft";
-static const char E_STOP2_EN[]  PROGMEM = "The filter is clogged";
-
-static const char E_WARN2[]  PROGMEM = "Der Filter ist kurz davor zu Verstopfen";
-static const char E_WARN2_EN[]  PROGMEM = "The filter is about to clog";
-
-static const char E_STOP3[]  PROGMEM = "Kein Filter entdeckt!";
-static const char E_STOP3_EN[]  PROGMEM = "No filter detected!";
-
-static const char E_STOP4[]  PROGMEM = "Filter Abdeckung offen";
-static const char E_STOP4_EN[]  PROGMEM = "Filter cover open";
-
-static const char E_STOP5[]  PROGMEM = "Gebläse beschädigt";
-static const char E_STOP5_EN[]  PROGMEM = "Blower damaged";
-
-static const char E_STOP7[]  PROGMEM = "Ventilfehler";
-static const char E_STOP7_EN[]  PROGMEM = "Valve error";
-
-static const char E_STOP8[]  PROGMEM = "Überstrom am Hilfsport entdeckt";
-static const char E_STOP8_EN[]  PROGMEM = "Overcurrent detected on auxiliary port";
-
-static const char E_STOP9[]  PROGMEM = "Pedalfehler";
-static const char E_STOP9_EN[]  PROGMEM = "Pedal error";
-
-static const char E_STOP10[] PROGMEM = "Systemfehler FAE";
-static const char E_STOP10_EN[] PROGMEM = "FAE system error";
-
-static const char E_STOP11[] PROGMEM = "Systemfehler FAE";
-static const char E_STOP11_EN[] PROGMEM = "FAE system error";
 
 #define DESC(x) (reinterpret_cast<flashstr_t>(x))
 
 
-// #if defined(ARDUINO_ARCH_AVR)
-// // Texte im Flash ablegen und als Zeiger verwenden
-// static const char E_STOP1[]  PROGMEM = "Standzeit Filter ist abgelaufen";
-// static const char E_WARN1[]  PROGMEM = "Standzeit Filter endet in X Tagen";
-// static const char E_STOP2[]  PROGMEM = "Der Filter ist Verstopft";
-// static const char E_WARN2[]  PROGMEM = "Der Filter ist kurz davor zu Verstopfen";
-// static const char E_STOP3[]  PROGMEM = "Kein Filter entdeckt!";
-// static const char E_STOP4[]  PROGMEM = "Filter Abdeckung offen";
-// static const char E_STOP5[]  PROGMEM = "Gebläse beschädigt";
-// static const char E_STOP7[]  PROGMEM = "Ventilfehler";
-// static const char E_STOP8[]  PROGMEM = "Überstrom am Hilfsport entdeckt";
-// static const char E_STOP9[]  PROGMEM = "Pedalfehler";
-// static const char E_STOP10[] PROGMEM = "Systemfehler FAE";
-// static const char E_STOP11[] PROGMEM = "Systemfehler FAE";
-// #define DESC(x) (reinterpret_cast<flashstr_t>(x))
+#if defined(ARDUINO_ARCH_AVR)
+// Texte im Flash ablegen und als Zeiger verwenden
+static const char E_STOP1[]  PROGMEM = "Standzeit Filter ist abgelaufen / Filter lifetime expired";
+static const char E_WARN1[]  PROGMEM = "Standzeit Filter endet in X Tagen / Filter lifetime ends in X days";
+static const char E_STOP2[]  PROGMEM = "Der Filter ist Verstopft / The filter is clogged";
+static const char E_WARN2[]  PROGMEM = "Der Filter ist kurz davor zu Verstopfen / The filter is about to clog";
+static const char E_STOP3[]  PROGMEM = "Kein Filter entdeckt! / No filter detected!";
+static const char E_STOP4[]  PROGMEM = "Filter Abdeckung offen / Filter cover open";
+static const char E_STOP5[]  PROGMEM = "Gebläse beschädigt / Blower damaged";
+static const char E_STOP7[]  PROGMEM = "Ventilfehler / Valve error";
+static const char E_STOP8[]  PROGMEM = "Überstrom am Hilfsport entdeckt / Overcurrent detected on auxiliary port";
+static const char E_STOP9[]  PROGMEM = "Pedalfehler / Pedal error";
+static const char E_STOP10[] PROGMEM = "Systemfehler FAE / FAE system error";
+static const char E_STOP11[] PROGMEM = "Systemfehler FAE / FAE system error";
+#define DESC(x) (reinterpret_cast<flashstr_t>(x))
 
 static const ErrInfo kErrMap[] = {
   {"STOP1",   1u,    DESC(E_STOP1)},
