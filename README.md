@@ -29,8 +29,8 @@ LED status (SK6812), relay after-run, persistence (NVS/EEPROM), and **RS-232 via
 - bus1 DeviceID len=30 ascii="84495820251031014332F283" | addr=0x12
 - [CLI] type 'help' for commands
 - [CFG] buses=2 | tstop(w/s)=10/0 | selectflow=100 | suctionlevel=3 | stand_intakes=1 | filter(life/sat)=0/0 | stat_error=0 (0x0)
--[FW] 02:F2:EMU_02:8881031:0051123 | by IceCube20 | build Oct 31 2025 00:21:44
--> Commands:
+- [FW] 02:F2:EMU_02:8881031:0051123 | by IceCube20 | build Oct 31 2025 00:21:44
+- > Commands:
 - help                     - Show this Help
 - ?                        - Show DEVID/Addr and other Data) 
 - show cfg                 - Show the actual Configuration
