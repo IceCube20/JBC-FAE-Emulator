@@ -1,6 +1,6 @@
 # JBC FAE Emulator – Control Your Own Fume Extractor with Your JBC Soldering Station Without the Original JBC FAE
 
-> **Current development version:** **v2.3.39RC**  **Only ESP32**
+> **Current development version:** **v2.3.60RC**  **Only ESP32**
 > The original **V1.0** version is still part of this project.
 This code runs on ESP32 and Arduino Mega.
 Dual Bus (Max 2 JBC Soldering Stations).
